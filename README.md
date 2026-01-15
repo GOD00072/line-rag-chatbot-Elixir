@@ -78,6 +78,93 @@
     *   **Vector Service Health:** `http://localhost:50052/health`
     *   **RabbitMQ Management:** `http://localhost:15672` (user: guest / pass: guest)
 
+### การติดตั้งแบบ Manual (Chat Service)
+
+1.  **เข้าไปในโฟลเดอร์ Chat Service**
+    ```bash
+    cd chat_service
+    ```
+
+2.  **ติดตั้ง Dependencies**
+    ```bash
+    mix deps.get
+    ```
+
+3.  **ตั้งค่า Database**
+    ```bash
+    # สร้าง Database
+    mix ecto.create
+
+    # รัน Migrations
+    mix ecto.migrate
+
+    # (ถ้ามี) ใส่ข้อมูลเริ่มต้น
+    mix ecto.seed
+    ```
+
+4.  **รัน Server**
+    ```bash
+    # รันแบบ Development
+    mix phx.server
+    ```
+
+### การติดตั้งแบบ Manual (Vector Service - C++)
+
+**สิ่งที่ต้องมี:**
+- C++ Compiler (GCC 9+ หรือ Clang 10+)
+- CMake 3.20+
+- Protocol Buffers
+- gRPC
+
+**ขั้นตอนการติดตั้ง Dependencies (Ubuntu/Debian):**
+```bash
+sudo apt-get update && sudo apt-get install -y \
+    build-essential \
+    cmake \
+    git \
+    pkg-config \
+    libprotobuf-dev \
+    protobuf-compiler \
+    libgrpc++-dev \
+    protobuf-compiler-grpc
+```
+
+**การ Build:**
+
+1.  **เข้าไปในโฟลเดอร์ Vector Service**
+    ```bash
+    cd vector_service
+    ```
+
+2.  **สร้างโฟลเดอร์ Build**
+    ```bash
+    mkdir -p build
+    cd build
+    ```
+
+3.  **รัน CMake Configuration**
+    ```bash
+    cmake -DCMAKE_BUILD_TYPE=Release \
+          -DUSE_AVX2=ON \
+          -DBUILD_TESTS=OFF \
+          ..
+    ```
+
+4.  **Compile โปรเจค**
+    ```bash
+    make -j$(nproc)
+    ```
+
+5.  **รัน Vector Server**
+    ```bash
+    ./vector_server
+    ```
+
+**ตัวเลือกการ Build:**
+- `-DUSE_AVX2=ON` - เปิดใช้งาน AVX2 SIMD (แนะนำ)
+- `-DUSE_AVX512=ON` - เปิดใช้งาน AVX-512 (สำหรับ CPU รุ่นใหม่)
+- `-DBUILD_TESTS=ON` - Build พร้อม Test Suite
+
 ---
 
 ## 🔌 ช่องทางการเชื่อมต่อ (API Endpoints)
